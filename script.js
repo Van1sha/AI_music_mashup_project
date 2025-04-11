@@ -37,7 +37,7 @@ app.use(
 app.use(express.json());
 
 // Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
 
 const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc"; // Replace with your actual key
 const genAI = new GoogleGenerativeAI(apiKey);
