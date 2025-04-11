@@ -1,0 +1,75 @@
+const express = require("express");
+const cors = require("cors");
+const path = require("path"); // Add this
+const {
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold,
+} = require("@google/generative-ai");
+
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc"; // Replace with your actual key
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-2.5-pro-exp-03-25",
+  systemInstruction:
+    "You are a music-focused AI chatbot. When the user asks about any song genre, mashup, remix, or songs by any singer or artist, respond with helpful and relevant information. Always try to include YouTube links to the requested songs, mashups, or related content whenever possible.",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 65536,
+  responseMimeType: "text/plain",
+};
+
+const chatSession = model.startChat({
+  generationConfig,
+  history: [
+    {
+      role: "user",
+      parts: [{ text: "hi" }],
+    },
+    {
+      role: "model",
+      parts: [
+        {
+          text: "Hello! I'm your music mashup assistant. How can I help you create amazing music today?",
+        },
+      ],
+    },
+  ],
+});
+
+// Serve the index.html file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Handle chat POST requests
+app.post("/chat", async (req, res) => {
+  const { message } = req.body;
+
+  try {
+    const result = await chatSession.sendMessage(message);
+    const aiResponse = result.response.text();
+    res.json({ response: aiResponse });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ response: "Sorry, something went wrong with the AI service!" });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
