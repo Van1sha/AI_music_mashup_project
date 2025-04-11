@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const {
   GoogleGenerativeAI,
   HarmCategory,
@@ -9,7 +10,7 @@ const {
 const app = express();
 const port = 3000;
 
-// Define allowed origins (your frontend URLs)
+// Define allowed origins (your Vercel frontend URLs)
 const allowedOrigins = [
   "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/",
   "https://ai-music-chatbot-gold.vercel.app/",
@@ -21,10 +22,10 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        console.log(`Origin allowed: ${origin}`);
+        console.log(`Origin allowed: ${origin}`); // Debug log
         callback(null, true);
       } else {
-        console.log(`Origin blocked: ${origin}`);
+        console.log(`Origin blocked: ${origin}`); // Debug log
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -34,6 +35,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
 
 const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc"; // Replace with your actual key
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -70,6 +74,11 @@ const chatSession = model.startChat({
   ],
 });
 
+// Serve the index.html file
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 // Handle chat POST requests
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
@@ -80,12 +89,12 @@ app.post("/chat", async (req, res) => {
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({
-      response: "Sorry, something went wrong with the AI service!",
-    });
+    res
+      .status(500)
+      .json({ response: "Sorry, something went wrong with the AI service!" });
   }
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running at http://localhost:${port}`);
 });
