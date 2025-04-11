@@ -10,6 +10,32 @@ const {
 const app = express();
 const port = 3000;
 
+// Define allowed origins (your Vercel frontend URLs)
+const allowedOrigins = [
+ "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/"
+  "https://ai-music-chatbot-gold.vercel.app/"
+  "http://localhost:3000", // Optional: for local testing
+];
+
+// Configure CORS
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like Postman) or from allowed origins
+      if (!origin || allowedOrigins.includes(origin)) {
+        console.log(Origin allowed: ${origin}); // Debug log
+        callback(null, true);
+      } else {
+        console.log(Origin blocked: ${origin}); // Debug log
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "OPTIONS"], // Include OPTIONS explicitly
+    allowedHeaders: ["Content-Type", "Authorization"], // Add Authorization
+  })
+);
+
+
 app.use(cors());
 app.use(express.json());
 
