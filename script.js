@@ -1,31 +1,28 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 const {
   GoogleGenerativeAI,
-  HarmCategory,
-  HarmBlockThreshold,
 } = require("@google/generative-ai");
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-// Define allowed origins (your Vercel frontend URLs)
+// ✅ No trailing slashes in origins
 const allowedOrigins = [
-  "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/",
-  "https://ai-music-chatbot-gold.vercel.app/",
-  "http://localhost:3000", // Optional: for local testing
+  "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app",
+  "https://ai-music-chatbot-gold.vercel.app",
+  "http://localhost:3000",
 ];
 
-// Configure CORS
+// ✅ CORS config
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) {
-        console.log(`Origin allowed: ${origin}`); // Debug log
+        console.log(`Origin allowed: ${origin}`);
         callback(null, true);
       } else {
-        console.log(`Origin blocked: ${origin}`); // Debug log
+        console.log(`Origin blocked: ${origin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -36,10 +33,8 @@ app.use(
 
 app.use(express.json());
 
-// Serve static files from the 'public' directory
-// app.use(express.static(path.join(__dirname, "public")));
-
-const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc"; // Replace with your actual key
+// ✅ API key hardcoded (not recommended for production)
+const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
@@ -74,12 +69,7 @@ const chatSession = model.startChat({
   ],
 });
 
-// Serve the index.html file
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Handle chat POST requests
+// ✅ Chat endpoint
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
 
@@ -95,6 +85,7 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// ✅ Start server
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
