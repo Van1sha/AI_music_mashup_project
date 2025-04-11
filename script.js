@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path"); // Add this
 const {
   GoogleGenerativeAI,
   HarmCategory,
@@ -10,9 +9,9 @@ const {
 const app = express();
 const port = 3000;
 
-// Define allowed origins (your Vercel frontend URLs)
+// Define allowed origins (your frontend URLs)
 const allowedOrigins = [
- "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/",
+  "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/",
   "https://ai-music-chatbot-gold.vercel.app/",
   "http://localhost:3000", // Optional: for local testing
 ];
@@ -21,26 +20,20 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like Postman) or from allowed origins
       if (!origin || allowedOrigins.includes(origin)) {
-        console.log(Origin allowed: ${origin}); // Debug log
+        console.log(`Origin allowed: ${origin}`);
         callback(null, true);
       } else {
-        console.log(Origin blocked: ${origin}); // Debug log
+        console.log(`Origin blocked: ${origin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "OPTIONS"], // Include OPTIONS explicitly
-    allowedHeaders: ["Content-Type", "Authorization"], // Add Authorization
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-
-app.use(cors());
 app.use(express.json());
-
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
 
 const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc"; // Replace with your actual key
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -77,11 +70,6 @@ const chatSession = model.startChat({
   ],
 });
 
-// Serve the index.html file
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
 // Handle chat POST requests
 app.post("/chat", async (req, res) => {
   const { message } = req.body;
@@ -92,10 +80,12 @@ app.post("/chat", async (req, res) => {
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ response: "Sorry, something went wrong with the AI service!" });
+    res.status(500).json({
+      response: "Sorry, something went wrong with the AI service!",
+    });
   }
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
