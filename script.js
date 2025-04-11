@@ -12,8 +12,8 @@ const port = 3000;
 
 // Define allowed origins (your Vercel frontend URLs)
 const allowedOrigins = [
- "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/"
-  "https://ai-music-chatbot-gold.vercel.app/"
+ "https://ai-music-chatbot-git-main-vanishas-projects-f4b1addc.vercel.app/",
+  "https://ai-music-chatbot-gold.vercel.app/",
   "http://localhost:3000", // Optional: for local testing
 ];
 
