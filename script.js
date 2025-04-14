@@ -34,7 +34,7 @@ app.use(
 app.use(express.json());
 
 // ✅ API key hardcoded (not recommended for production)
-const apiKey = "AIzaSyApRFugfon9G2FyJOG9iF1XcNKE5ya45Gc";
+const apiKey = 'AIzaSyAViG5_lKGGXXoOfb2-gWL6qNJ5W5tHLXM';
 const genAI = new GoogleGenerativeAI(apiKey);
 
 const model = genAI.getGenerativeModel({
